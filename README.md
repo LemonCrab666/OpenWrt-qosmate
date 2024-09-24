@@ -1,37 +1,39 @@
 # QoSmate: Quality of Service for OpenWrt
 
-QoSmate is a Quality of Service (QoS) solution for OpenWrt routers that aims to optimize network performance while allowing for controlled prioritization of specific traffic types. It uses nftables for packet classification and offers both CAKE (Common Applications Kept Enhanced) and HFSC (Hierarchical Fair Service Curve) queueing disciplines for traffic management. It uses tc-ctinfo to restore DSCP marks on ingress.
+基于 [@hudra0](https://github.com/hudra0/qosmate) 做出的汉化
 
-The project builds upon the amazing work of [@dlakelan](https://github.com/dlakelan) and his [SimpleHFSCgamerscript](https://github.com/dlakelan/routerperf/blob/master/SimpleHFSCgamerscript.sh), extending its capabilities and adding a user-friendly interface. QoSmate integrates concepts from various QoS systems, including SQM, DSCPCLASSIFY and cake-qos-simple to provide a comprehensive approach to traffic control.
+QoSmate 是一个针对 OpenWrt 路由器的服务质量（QoS）解决方案，旨在优化网络性能，同时允许对特定流量类型进行受控优先级排序。它使用 nftables 进行数据包分类，并提供 CAKE（通用应用增强保持）和 HFSC（分层公平服务曲线）队列管理机制来管理流量。它使用 tc-ctinfo 在入站流量中恢复 DSCP 标记。
 
-Key aspects of QoSmate include
-- Support for both HFSC and CAKE queueing disciplines
-- A LuCI-based interface for easy configuration
-- DSCP marking and traffic prioritization options via CLI and UI
-- Automatic package installation and setup
+该项目建立在 [@dlakelan](https://github.com/dlakelan) 的卓越工作基础上，并扩展了他的 [SimpleHFSCgamerscript](https://github.com/dlakelan/routerperf/blob/master/SimpleHFSCgamerscript.sh)的功能，增加了用户友好的界面。QoSmate 融合了各种 QoS 系统的概念，包括 SQM、DSCPCLASSIFY 和 cake-qos-simple，以提供全面的流量控制方案。
 
-While QoSmate can benefit various types of network traffic, including gaming and other latency-sensitive applications, it is designed to improve overall network performance when configured properly.
+QoSmate 的关键特点包括：
+- 支持 HFSC 和 CAKE 队列管理机制
+- 基于 LuCI 的界面，便于配置
+- 通过 CLI 和 UI 提供 DSCP 标记和流量优先级选项
+- 自动安装和设置软件包
 
-Important Note: Effective QoS is about strategic prioritization, not blanket elevation of all traffic. QoSmate allows you to prioritize specific traffic types, but it's crucial to use this capability judiciously. Over-prioritization can negate the benefits of QoS, as elevating too much traffic essentially equates to no prioritization at all. Remember that for every packet given preferential treatment, others may experience increased delay or even drops. The goal is to create a balanced, efficient network environment, not to prioritize everything.
+虽然 QoSmate 可以改善各种网络流量，包括游戏和其他对延迟敏感的应用，但只有在正确配置时才能提高整体网络性能。
 
-## 1. Installation
+重要提示：有效的 QoS 关注于战略性优先级，而不是所有流量的统一提升。QoSmate 允许您优先考虑特定流量类型，但必须谨慎使用这一功能。过度优先级可能会抵消 QoS 的好处，因为提升过多流量本质上等同于没有优先级。请记住，给予优待的每个数据包，其他数据包可能会经历更高的延迟或丢失。目标是创建一个平衡、高效的网络环境，而不是优先考虑所有内容。
 
-Before installing QoSmate, ensure that:
+## 1. 安装
 
-1. Any existing QoS services or scripts (e.g., SQM, Qosify, DSCPCLASSIFY, SimpleHFSCgamerscript...) are disabled and stopped to avoid conflicts.
-2. Your router is rebooted to clear out old settings for a clean start.
+在安装 QoSmate 之前，请确保：
 
-### a) Backend Installation
+1. 禁用并停止任何现有的 QoS 服务或脚本（例如 SQM、Qosify、DSCPCLASSIFY、SimpleHFSCgamerscript 等），以避免冲突。
+2. 重启路由器，以清除旧设置，确保干净的启动。
 
-Install the QoSmate backend (which contains a main script/init script/hotplug and a config-file) with the following command:
+### a) 后端安装
+
+使用以下命令安装 QoSmate 后端（包含主脚本/初始化脚本/热插拔和配置文件）：
 
 ```bash
 wget -O /etc/init.d/qosmate https://raw.githubusercontent.com/hudra0/qosmate/main/etc/init.d/qosmate && chmod +x /etc/init.d/qosmate && wget -O /etc/qosmate.sh https://raw.githubusercontent.com/hudra0/qosmate/main/etc/qosmate.sh && chmod +x /etc/qosmate.sh && wget -O /etc/config/qosmate https://raw.githubusercontent.com/hudra0/qosmate/main/etc/config/qosmate
 ```
 
-### b) Frontend Installation
+### b) 前端安装
 
-Install [luci-app-qosmate](https://github.com/hudra0/luci-app-qosmate) with this command:
+使用以下命令安装 [luci-app-qosmate](https://github.com/hudra0/luci-app-qosmate) :
 
 ```bash
 mkdir -p /www/luci-static/resources/view/qosmate /usr/share/luci/menu.d /usr/share/rpcd/acl.d /usr/libexec/rpcd && \
@@ -51,29 +53,29 @@ chmod +x /usr/libexec/rpcd/luci.qosmate && \
 
 ```
 
-### c) Usage
+### c) 使用
 
-1. After installation, start the QoSmate service:
+1. 安装完成后，启动 QoSmate 服务：
 ```
 /etc/init.d/qosmate start
 ```
-1. Access the LuCI web interface and navigate to Network > QoSmate.
-2. Configure the basic settings: For a basic configuration, adjust the following key parameters:
-    - **WAN Interface**: Select your WAN interface
-    - **Download Rate (kbps)**: Set to 80-90% of your actual download speed
-    - **Upload Rate (kbps)**: Set to 80-90% of your actual upload speed
-    - **Root Queueing Discipline**: Choose between HFSC (default) and CAKE
-3. Apply the changes
+1. 访问 LuCI 网页界面，导航到 网络 > QoSmate。
+2. 配置基本设置：对于基本配置，调整以下关键参数：
+    - **WAN 接口**: 选择您的 WAN 接口
+    - **下载速率 (kbps)**: 设置为实际下载速度的 80-90%
+    - **上传速率 (kbps)**: 设置为实际上传速度的 80-90%
+    - **根队列管理机制**: 在 HFSC（默认）和 CAKE 之间选择
+3. 应用更改
 
-#### Auto-setup Function
+#### 自动设置功能
 
-For users preferring automatic configuration, QoSmate offers an Auto-setup function:
+对于喜欢自动配置的用户，QoSmate 提供自动设置功能：
 
-1. In the QoSmate settings page, click "Start Auto Setup"
-2. Optionally, enter your gaming device's IP address for prioritization
-3. Wait for the speed test and configuration to complete
+1. 在 QoSmate 设置页面，点击“开始自动设置”
+2. 可选，输入您的游戏设备的 IP 地址以进行优先级设置
+3. 等待速度测试和配置完成
 
-**Note**: Router-based speed tests may underestimate your actual connection speed. For more precise settings, run a speed test from a LAN device and manually input the results. The auto-setup provides a useful starting point, but manual fine-tuning may be necessary for optimal performance.
+**注意**: 基于路由器的速度测试可能会低估您的实际连接速度。为了更精确的设置，从 LAN 设备运行速度测试并手动输入结果。自动设置提供了一个有用的起点，但可能需要手动微调以获得最佳性能。
 ## 2. QoSmate Configuration Settings
 
 ### Basic and Global Settings
